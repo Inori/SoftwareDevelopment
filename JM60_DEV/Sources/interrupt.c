@@ -98,6 +98,58 @@ void interrupt VectorNumber_Vsci1rx SCI_Receive()
    SCI1C2_RIE = 1; //enable receive interrupt
    
 }
+/*
+void interrupt VectorNumber_Vtpm1ch0 PWM0()
+{
+  byte dummy = 0;
+  
+  if(LED1DCR < LEDMDR)
+     LED1DCR += STEP;
+  else
+     LED1DCR -= STEP;
+ 
+  dummy = TPM1C0SC;  //clear flag
+  TPM1C0SC_CH0F = 0; //clear flag
+}
+*/
+
+
+//为什么不能一个亮一个灭？？？
+void interrupt VectorNumber_Vtpm1ovf TPM()
+{
+  static byte flag1 = 1;
+  static byte flag2 = 1;
+  byte dummy = 0;
+   
+  if(flag1)
+  {
+    LED1DCR += STEP;
+    if(LED1DCR == LEDMDR)
+      flag1 = 0;
+  }
+  else
+  {
+    LED1DCR -= STEP;
+    if(LED1DCR == 0)
+      flag1 = 1;
+  }
+  
+  if(flag2)
+  {
+    LED2DCR -= STEP;
+    if(LED2DCR == 0)
+      flag2 = 0;
+  }
+  else
+  {
+    LED2DCR += STEP;
+    if(LED2DCR == LEDMDR)
+      flag2 = 1;
+  }
+  
+  dummy = TPM1SC;
+  TPM1SC_TOF = 0;//clear flag
+}
 
 
 

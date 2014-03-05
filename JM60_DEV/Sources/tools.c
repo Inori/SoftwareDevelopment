@@ -27,7 +27,7 @@ int abs(int x)
     return x;
 }
 
-uchar average(uchar* data, uint len)
+byte average(byte* data, uint len)
 {
   uint i = 0;
   uint sum = 0;

@@ -13,6 +13,15 @@ void MCU_Init(void)
   while((MCGSC & 0x6C) != 0x6C);
 }
 
+void MCG_Init(void) 
+{
+  if (NVMCGTRM != 0xFF) 
+  {
+    MCGTRM = NVMCGTRM;	      // load trim value if location not blank                
+  }
+	while (MCGC1_CLKS != MCGSC_CLKST);             
+} 	
+
 
 void LED_Init(void)
 {
@@ -66,14 +75,31 @@ void SCI_Init(void)
    SCI1C2 = 0x2C; 
 }
 
+void PWM_Init(void)
+{
+  TPM1SC = 0x4A; //Enable TPM interrupt, BusClock, 4 divided-by
+  TPM1MOD = BusClock/4/100; // (4/BusClock) * MOD = 10/1000 s
+  
+  TPM1C0SC = 0x24;
+  TPM1C0V = 0;
+  
+  TPM1C1SC = 0x24;
+  TPM1C1V = LEDMDR;
+  //TPM1C1V = 0;
+  
+  TPM1CNT = 0; //clear cnt
+}
+
 
 void ALL_Init(void)
 {
   SOPT1 &= 0x3F; //disable cop
+  MCG_Init(); 
   LED_Init();
   KBI_Init();
   RTC_Init();
   SPI_Init();
   ATD_Init();
   SCI_Init();
+  PWM_Init();
 }
