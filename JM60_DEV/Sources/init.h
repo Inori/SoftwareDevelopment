@@ -23,6 +23,8 @@ void SCI_Init(void);
 
 void PWM_Init(void);
 
+void IIC_Init(void);
+
 void ALL_Init(void);
 
 #endif

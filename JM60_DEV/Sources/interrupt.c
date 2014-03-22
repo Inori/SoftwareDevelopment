@@ -44,12 +44,18 @@ void interrupt VectorNumber_Vkeyboard KBI()
      } 
   }
   
+  if(Key4 == 0 && Key5 == 0)
+  {
+    //g_segflag = !g_segflag;
+  }
+  
   KBISC_KBACK = 1; //clean flag
 }
 
 
 void interrupt VectorNumber_Vrtc RTC()
 {
+ 
   T += 1;
   RTCSC_RTIF = 1; //clean flag
 }

@@ -90,16 +90,25 @@ void PWM_Init(void)
   TPM1CNT = 0; //clear cnt
 }
 
+void IIC_Init(void)
+{
+  IICF=0x4E;        //mul=2 SCL Divider = 56, buad = BusClock/56/2
+  IICC1_IICEN = 1;  //enable IIC
+}
+
 
 void ALL_Init(void)
 {
   SOPT1 &= 0x3F; //disable cop
   MCG_Init(); 
-  LED_Init();
+  //LED_Init();
   KBI_Init();
   RTC_Init();
   SPI_Init();
-  ATD_Init();
+  //ATD_Init();
   SCI_Init();
-  PWM_Init();
+  //PWM_Init();
+  IIC_Init();
+  
+  
 }

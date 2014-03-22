@@ -9,6 +9,8 @@
 #include "tools.h"
 #include "func.h"
 #include "ht1628.h"
+#include "pcf8563.h"
+#include "HCS08_EEPROM_API.h"
 
 #define BusClock 9200000
 
@@ -28,6 +30,15 @@
 
 
 extern ulong T;
+//extern byte g_segflag;
+
+extern byte Seconds;
+extern byte Minutes; 
+extern byte Hours;
+extern byte Days; 
+extern byte Weekdays; 
+extern byte Months; 
+extern byte Years;
 
 
 
