@@ -1,0 +1,25 @@
+/* This is a linker parameter file for the mc9s08jm60 */
+
+NAMES END /* CodeWarrior will pass all the needed files to the linker by command line. But here you may add your own files too. */
+
+SEGMENTS /* Here all RAM/ROM areas of the device are listed. Used in PLACEMENT below. */
+    ROM                      =  READ_ONLY    0x1960 TO 0xFBFF;
+    Bootloader               =  READ_ONLY    0xFC00 TO 0xFFAF;
+    Z_RAM                    =  READ_WRITE   0x00BB TO 0x00FF;
+    RAM                      =  READ_WRITE   0x0100 TO 0x10AF;
+    RAM1                     =  READ_WRITE   0x1860 TO 0x195F;
+    ROM1                     =  READ_ONLY    0x10B0 TO 0x17FF;
+    ROM2                     =  READ_ONLY    0xFFC0 TO 0xFFC3;
+END
+
+PLACEMENT /* Here all predefined and user segments are placed into the SEGMENTS defined above. */
+    DEFAULT_RAM                           INTO  RAM,RAM1;
+    DEFAULT_ROM, ROM_VAR, STRINGS         INTO  ROM; /* ROM1,ROM2 In case you want to use ROM1,ROM2 as well, be sure the option -OnB=b is passed to the compiler. */
+    _DATA_ZEROPAGE, MY_ZEROPAGE           INTO  Z_RAM;
+    Bootloader_ROM                        INTO  Bootloader;
+END
+
+STACKSIZE 0xC0
+
+//VECTOR 0 _Startup /* Reset vector: this is the default entry point for an application. */
+VECTOR 0 _Entry

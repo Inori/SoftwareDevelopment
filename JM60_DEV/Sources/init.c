@@ -41,19 +41,19 @@ void KBI_Init(void)
 void RTC_Init(void)
 {
    MCGC2 |= 0x26; //使能外部晶振
-   RTCSC = 0x38; //外部4MHz晶振, 16分频
+   RTCSC = 0x38; //外部4KHz晶振, 1分频
    RTCMOD = 40; // (1/4000)*40 = 1/100 定时10ms
 }
 
 void PTED_Init(void)
 {
-  PTEDD |= 0xE0;
+  PTEDD |= 0xE3;
   PTED |= 0xE0;
 }
 
 void SPI_Init(void)
 {
-   PTED_Init();
+   
    SPI1C1 = 0x5D; //前沿输出后沿采样，低位有效开始
    SPI1BR = 0x11; //8分频, baud = BusClock/(2*4) = 1MHz
 }
@@ -100,7 +100,8 @@ void IIC_Init(void)
 void ALL_Init(void)
 {
   SOPT1 &= 0x3F; //disable cop
-  MCG_Init(); 
+  MCG_Init();
+  PTED_Init(); 
   //LED_Init();
   KBI_Init();
   RTC_Init();
@@ -108,7 +109,10 @@ void ALL_Init(void)
   //ATD_Init();
   SCI_Init();
   //PWM_Init();
-  IIC_Init();
+  //IIC_Init();
   
-  
+  //HCS08_EE_Init();   //初始化Flash控制寄存器
+  //PCF8563_Init();
+  //LCD_INIT();
+   
 }

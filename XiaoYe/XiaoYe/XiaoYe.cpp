@@ -218,8 +218,6 @@ int CALLBACK TimerCmd()
 		break;
 	}
 	
-
-noswitch:
 	return 0;
 }
 
@@ -302,7 +300,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	eomo = (HBITMAP)LoadImageA(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BITMAP4), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	hBitmap = eomo;
 
-	gPort.InitPort(4);
+	gPort.InitPort(3);
 
 	WNDCLASSEXA wcex;
 	memset(&wcex, 0, sizeof(wcex));

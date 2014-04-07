@@ -2,6 +2,8 @@
 
 //È«¾ÖÊ±¼ä±äÁ¿,Ã¿10ms¼Ó1
 ulong T = 0;
+//ÆÁÄ»ÏÔÊ¾×Ö·û´®»º³å
+char buff[20]= {0};
 
 //ÊıÂë¹ÜÏÔÊ¾ÉèÖÃ±êÖ¾
 //0 ÏÔÊ¾Ê±ÖÓĞ¾Æ¬ÃëÊı
@@ -11,31 +13,47 @@ ulong T = 0;
 
 void main(void) 
 {
-
-  byte test[5] = {1,2,3,4,5};
-  byte res[5] = {0};
+  byte segnum = 0;
+  int DispCnt = 0;
+  
 
   DisableInterrupts;
   ALL_Init();
   EnableInterrupts; 
 
-  //seg_display(1234);
+  /* 
   
-  PCF8563_Init();
   
-  HCS08_EE_Init();//³õÊ¼»¯Flash¿ØÖÆ¼Ä´æÆ÷¡
-  HCS08_EE_WriteData(test, 5);
-  HCS08_EE_ReadData(res, 5);
-    
-
-
+  //HCS08_EE_WriteRecord(&segnum);  //Init segnum
+  HCS08_EE_ReadRecord(&segnum);
+  //seg_display(segnum);
+  sprintf(buff, "The %dth time on", segnum); 
+  LCD_CLS_ALL();   //ÇåÆÁ
+  LCD_Print(0,0,buff);        //½«Õû¸öÊı¾İĞ´ÔÚÒº¾§µÚÒ»ĞĞ
+  
+  segnum++;
+  HCS08_EE_WriteRecord(&segnum);
+  
+  wait(200);
+   */
   while(TRUE)
-  {  
-     //sci_sendstr("What the fuck!\r\n");
-     //sci_senddata(0x20);
-     //flash_led();
-     PCF8563_Read_Info();
-     seg_display(100*(uint)bcd2dec(Minutes)+(uint)bcd2dec(Seconds));
+  { 
+  
+  
+    sci_sendstr("What the fuck!\r\n");
+    //sci_senddata(0x20);
+    
+    //flash_led();
+    /*
+    PCF8563_Read_Info();
+    //seg_display((uint)bcd2dec(Seconds));
+    sprintf(buff, "%02d:%02d", (uint)bcd2dec(Minutes),(uint)bcd2dec(Seconds)); 
+    LCD_CLS_ALL();   //ÇåÆÁÓï¾ä
+    LCD_Print(0,0,buff);        //½«Õû¸öÊı¾İĞ´ÔÚÒº¾§µÚÒ»ĞĞ
+    LCD_Print(1,0,Text+(DispCnt%16));     //½«Êı¾İµÚ¶şĞĞÏÔÊ¾ÀûÓÃforÑ­»·Éè//ÖÃ¹ö¶¯µÄĞ§¹û
+    DispCnt++;
+    
+    delay(500); */
   }
 
 }

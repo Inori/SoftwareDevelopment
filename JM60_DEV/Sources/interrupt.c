@@ -18,6 +18,11 @@ void interrupt VectorNumber_Vkeyboard KBI()
   delay(10);
   if(Key4 == 0)
   {
+  
+     //PTED_PTED0 = 0;
+     //PTED_PTED1 = 1; 
+     /////////////////////////////////////////////////
+     
      if(flag4)
      {
        sci_sendstr("ec");
@@ -27,11 +32,16 @@ void interrupt VectorNumber_Vkeyboard KBI()
      {
        sci_sendstr("eo");
        flag4 = TRUE;
-     } 
+     }  
   }
   
   if(Key5 == 0)
   {
+  
+     //PTED_PTED0 = 1;
+     //PTED_PTED1 = 0; 
+     /////////////////////////////////////////////////
+     
      if(flag5)
      {
        sci_sendstr("mo");
@@ -42,6 +52,7 @@ void interrupt VectorNumber_Vkeyboard KBI()
        sci_sendstr("mc");
        flag5 = TRUE;
      } 
+     
   }
   
   if(Key4 == 0 && Key5 == 0)

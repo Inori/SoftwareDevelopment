@@ -1,17 +1,21 @@
 #ifndef INCLUDE_H
 #define INCLUDE_H
 
+/*****************Include*******************************/
 #include <hidef.h> 
 #include "derivative.h"
 #include <stdtypes.h>
+#include <stdio.h>
 
 #include "init.h"
 #include "tools.h"
 #include "func.h"
 #include "ht1628.h"
 #include "pcf8563.h"
+#include "lcd1602.h"
 #include "HCS08_EEPROM_API.h"
 
+/*****************Define*******************************/
 #define BusClock 9200000
 
 #define LED1 PTBD_PTBD0
@@ -28,7 +32,7 @@
 #define LED1DCR TPM1C0V //LED1(PTED2) Duty Cycle Register
 #define LED2DCR TPM1C1V //LED2(PTED3) Duty Cycle Register
 
-
+/*****************Extern*******************************/
 extern ulong T;
 //extern byte g_segflag;
 
