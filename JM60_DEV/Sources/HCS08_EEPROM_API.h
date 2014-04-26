@@ -40,7 +40,7 @@
 ** accordingly. Also the PRM file should be modified to specify the new ROM 
 ** address. 2 pages are used for EEPROM emulatio, thus ROM = ROM + 0x200. 
 **/ 
-#define HCS08_FLASH_START_ADDR  0xE000 
+#define HCS08_FLASH_START_ADDR  0x10B0 
 /** 
 ** Page size of HCS08 is 0x200 
 **/ 
@@ -49,7 +49,7 @@
 ** CPU bus frequncy, modify it according to your system configuration. 
 ** Unit is kHz. For example, 4 MHz is defined as 4000 (kHz) 
 **/ 
-#define HCS08_BUS_FREQUENCY     4000    
+#define HCS08_BUS_FREQUENCY     9200    
 /** 
 ** FLASH block protection. Default is off.  
 ** It is stongly to turn it on to protect the code space of CPU. 

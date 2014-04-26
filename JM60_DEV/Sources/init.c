@@ -101,18 +101,18 @@ void ALL_Init(void)
 {
   SOPT1 &= 0x3F; //disable cop
   MCG_Init();
-  PTED_Init(); 
+  //PTED_Init(); 
   //LED_Init();
-  KBI_Init();
+  //KBI_Init();
   RTC_Init();
-  SPI_Init();
+  //SPI_Init();
   //ATD_Init();
-  SCI_Init();
+  //SCI_Init();
   //PWM_Init();
-  //IIC_Init();
+  IIC_Init();
   
   //HCS08_EE_Init();   //³õÊ¼»¯Flash¿ØÖÆ¼Ä´æÆ÷
-  //PCF8563_Init();
-  //LCD_INIT();
+  PCF8563_Init();
+  LCD_INIT();
    
 }

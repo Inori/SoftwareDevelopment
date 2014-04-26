@@ -23,11 +23,8 @@ interrupt void Dummy_ISR(void) {
   
 }
  
- 
-void main(void) 
+void SetBusClock_24M(void)
 {
-
-     
      MCGC2= 0x36;
      while(!MCGSC_OSCINIT) ;
      MCGC1 = 0xB8;
@@ -39,6 +36,13 @@ void main(void)
      while(!MCGSC_LOCK);
      MCGC1 = 0x08;    //ÇÐ»»µ½PLL  0x10;
      while(MCGSC_CLKST!=3);
+}
+
+void main(void) 
+{
+
+     
+  SetBusClock_24M();
      
   PTBDD |= 0x03;
   
