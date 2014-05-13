@@ -9,6 +9,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exwatfopck", "exwatfopck\ex
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ps3tex2pctex", "ps3tex2pctex\ps3tex2pctex.vcxproj", "{B0E05402-B2F0-4E35-BEF5-020C1F42E730}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "png2tex", "png2tex\png2tex.vcxproj", "{5BC70748-6369-47BC-91CC-819137BC7F51}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "de_facelz7", "de_facelz7\de_facelz7.vcxproj", "{B48AF740-F690-49DC-8A7D-12C711C9030E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -27,6 +31,14 @@ Global
 		{B0E05402-B2F0-4E35-BEF5-020C1F42E730}.Debug|Win32.Build.0 = Debug|Win32
 		{B0E05402-B2F0-4E35-BEF5-020C1F42E730}.Release|Win32.ActiveCfg = Release|Win32
 		{B0E05402-B2F0-4E35-BEF5-020C1F42E730}.Release|Win32.Build.0 = Release|Win32
+		{5BC70748-6369-47BC-91CC-819137BC7F51}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5BC70748-6369-47BC-91CC-819137BC7F51}.Debug|Win32.Build.0 = Debug|Win32
+		{5BC70748-6369-47BC-91CC-819137BC7F51}.Release|Win32.ActiveCfg = Release|Win32
+		{5BC70748-6369-47BC-91CC-819137BC7F51}.Release|Win32.Build.0 = Release|Win32
+		{B48AF740-F690-49DC-8A7D-12C711C9030E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B48AF740-F690-49DC-8A7D-12C711C9030E}.Debug|Win32.Build.0 = Debug|Win32
+		{B48AF740-F690-49DC-8A7D-12C711C9030E}.Release|Win32.ActiveCfg = Release|Win32
+		{B48AF740-F690-49DC-8A7D-12C711C9030E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

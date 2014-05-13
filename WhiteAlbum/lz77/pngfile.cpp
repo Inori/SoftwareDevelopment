@@ -66,9 +66,9 @@ int read_png_file(string filepath, pic_data *out)
 		{
 			for (j = 0; j < temp; j += 4)
 			{/* 一个字节一个字节的赋值 */
-				out->rgba[i*temp + j] = row_pointers[i][j];       // red
+				out->rgba[i*temp + j] = row_pointers[i][j+2];       // red
 				out->rgba[i*temp + j + 1] = row_pointers[i][j + 1];   // green
-				out->rgba[i*temp + j + 2] = row_pointers[i][j + 2];   // blue
+				out->rgba[i*temp + j + 2] = row_pointers[i][j];   // blue
 				out->rgba[i*temp + j + 3] = row_pointers[i][j + 3];   // alpha
 			}
 		}

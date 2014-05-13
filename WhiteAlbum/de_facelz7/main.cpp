@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string>
 
-#include "pngfile.h"
 using namespace std;
 
 #pragma pack(1)
@@ -20,7 +19,7 @@ typedef struct tex_header_s
 } tex_header_t;
 
 typedef struct ps3_uk_header_s
-{	
+{
 	DWORD uk0;
 	DWORD uk1;
 	DWORD width;
@@ -63,7 +62,7 @@ Loop1:
 		mov     flag, al
 		mov     ebx, 0x8
 		mov     in_first, esi
-Tag1:
+Tag1 :
 		test    flag, 0x80
 		je      Tag2
 		movzx   eax, byte ptr[ecx]
@@ -77,23 +76,23 @@ Tag1:
 		sub     esi, eax
 		test    edi, edi
 		jbe     Tag3
-		//lea     esp, dword ptr[esp]
-Loop2:
+			//lea     esp, dword ptr[esp]
+Loop2 :
 		mov     al, byte ptr[esi]
 		mov     byte ptr[ebp], al
 		inc     ebp
 		inc     esi
 		sub     edi, 0x1
 		jnz     Loop2
-Tag3:
+Tag3 :
 		add     ecx, 0x2
 		jmp     Tag4
-Tag2:
+Tag2 :
 		mov     al, byte ptr[ecx]
 		mov     byte ptr[ebp], al
 		inc     ebp
 		inc     ecx
-Tag4:
+Tag4 :
 		shl     flag, 1
 		dec     ebx
 		sub     edx, 0x1
@@ -116,7 +115,7 @@ int main(int argc, char* argv[])
 {
 	if (argc < 2)
 	{
-		printf("tex2png v1.0 by 福音\n");
+		printf("de_facelz7 v1.0 by 福音\n");
 		//如果没有输出文件名，默认输出文件名为输入文件名加.bin后缀
 		printf("usage: %s <input.tex> \n", argv[0]);
 		return -1;
@@ -131,16 +130,7 @@ int main(int argc, char* argv[])
 	DWORD size = ftell(fin);
 	fseek(fin, 0, SEEK_SET);
 
-	tex_header_t htex;
-	fread(&htex, sizeof(tex_header_t), 1, fin);
-	
-	if (strncmp(htex.sig, "Texture", 7))
-	{
-		fseek(fin, 0, SEEK_SET);
-		ps3_uk_header_s hps3;
-		fread(&hps3, sizeof(ps3_uk_header_t), 1, fin);
-	}
-	
+
 	lz77_header_t hlz;
 	fread(&hlz, sizeof(lz77_header_t), 1, fin);
 	if (strncmp(hlz.sig, "LZ77", 4))
@@ -151,14 +141,7 @@ int main(int argc, char* argv[])
 	fread(first_data, first_len, 1, fin);
 
 
-	DWORD second_len;
-	
-	if (strncmp(htex.sig, "Texture", 7))
-		second_len = size - (first_len + sizeof(ps3_uk_header_s) + sizeof(lz77_header_t));
-	else
-		second_len = size - (first_len + sizeof(tex_header_t) + sizeof(lz77_header_t));
-		
-	//second_len = size - (first_len + sizeof(tex_header_t)+sizeof(lz77_header_t));
+	DWORD second_len = size - (first_len + sizeof(lz77_header_t));
 	BYTE *second_data = new BYTE[second_len];
 	fread(second_data, second_len, 1, fin);
 
@@ -174,32 +157,20 @@ int main(int argc, char* argv[])
 	in_len = step;
 	lz77_decompress();
 
-	//写png文件
-	pic_data png;
-	png.width = big_endian(htex.width);
-	png.height = big_endian(htex.height);
-	//png.bit_depth = big_endian(htex.bit_depth);
-	png.bit_depth = 8;
-	png.flag = HAVE_ALPHA;
-	png.rgba = out_data;
 
-	string fn_png = in_filename + ".png";
-	write_png_file(fn_png, &png);
-
-	/*
 	string out_fname;
 	if (argc > 2)
-		out_fname = argv[2];
+	out_fname = argv[2];
 	else
-		out_fname = in_filename + ".bin";
+	out_fname = in_filename + ".bin";
 
 	FILE *fout = fopen(out_fname.c_str(), "wb");
 	if (!fout)
-		return -1;
+	return -1;
 	fwrite(out_data, out_len, 1, fout);
 
 	fclose(fout);
-	*/
+	
 
 	fclose(fin);
 	delete[]out_data;

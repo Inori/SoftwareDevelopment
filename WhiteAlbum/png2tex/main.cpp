@@ -19,8 +19,8 @@ typedef struct tex_info_s
 	DWORD png_size;
 	DWORD width;
 	DWORD height;
-	//DWORD width2;
-	//DWORD height2;
+	DWORD width2;
+	DWORD height2;
 }tex_info_t;
 
 typedef struct lz77_header_s
@@ -65,59 +65,15 @@ int main(int argc, char* argv[])
 {
 	if (argc < 2)
 	{
-		printf("ps3tex2pctex v1.0 by 福音\n");
-		printf("usage: %s <input.tex> \n", argv[0]);
+		printf("png2tex v1.0 by 福音\n");
+		printf("usage: %s <input.png> \n", argv[0]);
 		return -1;
 	}
-	string in_filename(argv[1]);
-
-	FILE *fin = fopen(in_filename.c_str(), "rb");
-	if (!fin)
-		return -1;
-
-	fseek(fin, 0, SEEK_END);
-	DWORD size = ftell(fin);
-	fseek(fin, 0, SEEK_SET);
-
-	tex_header_t htex;
-	fread(&htex, sizeof(tex_header_t), 1, fin);
-
-	//如果不是有Texture文件头的外部tex文件，就是MP里的TEX_ALL.TEX，暂时先这样判断
-	if (strncmp(htex.sig, "Texture", 7))
-	{
-		fseek(fin, 0, SEEK_SET);
-	}
-
-	//获取文件长宽、大小信息
-	tex_info_t hinfo;
-	fread(&hinfo, sizeof(tex_info_t), 1, fin);
-
-	//检测png文件头
-	png_header_t hpng;
-	fread(&hpng, sizeof(png_header_t), 1, fin);
-	if (memcmp(hpng.sig, "\x89PNG", 4))
-	{
-		printf("wrong png header found!\n");
-		return -1;
-	}
-	fseek(fin, 0-sizeof(png_header_t), SEEK_CUR);
-
-	//写png文件
-	unsigned long png_size = big_endian(hinfo.png_size);
-	unsigned char *png_buff = new unsigned char[png_size];
-	fread(png_buff, png_size, 1, fin);
-
-	string fn_tmp = in_filename + ".png";
-	FILE *png_temp = fopen(fn_tmp.c_str(), "wb");
-	if (!png_temp)
-		return -1;
-	fwrite(png_buff, png_size, 1, png_temp);
-	delete[] png_buff;
-	fclose(png_temp);
+	string png_filename(argv[1]);
 
 	//读png文件
 	pic_data png;
-	read_png_file(fn_tmp, &png);
+	read_png_file(png_filename, &png);
 
 	//伪压缩数据
 	unsigned char *lz77_data = NULL;
@@ -125,19 +81,23 @@ int main(int argc, char* argv[])
 	lz77_compress(lz77_data, len, png.rgba, png.width, png.height);
 
 	//写转换后文件
-	string out_filename = "pc_" + in_filename;
+	string out_filename = png_filename.substr(0,png_filename.find_last_of(".")) + ".tex";
 	FILE *fout = fopen(out_filename.c_str(), "wb");
 	if (!fout)
 		return -1;
+	tex_header_t htex;
+	strcpy(htex.sig, "Texture ");
+	htex.data_size = big_endian(len + sizeof(lz77_header_t)+0x24);
+	fwrite(&htex, sizeof(tex_header_t), 1, fout);
 
-	if (!strncmp(htex.sig, "Texture", 7))
-	{
-		htex.data_size = big_endian(len + sizeof(lz77_header_t)+0x24);
-		fwrite(&htex, sizeof(tex_header_t), 1, fout);
-	}
-
-	hinfo.png_size = big_endian(len + sizeof(lz77_header_t));
+	tex_info_t hinfo;
 	hinfo.uk0 = big_endian(8);
+	hinfo.png_size = big_endian(len + sizeof(lz77_header_t));
+	hinfo.width = big_endian(png.width);
+	hinfo.height = big_endian(png.height);
+	hinfo.width2 = big_endian(png.width);
+	hinfo.height2 = big_endian(png.height);
+	
 	fwrite(&hinfo, sizeof(tex_info_t), 1, fout);
 
 	lz77_header_t hlz;
@@ -158,6 +118,5 @@ int main(int argc, char* argv[])
 	delete[] z_buff;
 
 	fclose(fout);
-	fclose(fin);
 	return 0;
 }
