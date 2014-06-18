@@ -19,8 +19,8 @@ typedef struct tex_info_s
 	DWORD png_size;
 	DWORD width;
 	DWORD height;
-	//DWORD width2;
-	//DWORD height2;
+	DWORD width2;
+	DWORD height2;
 }tex_info_t;
 
 typedef struct lz77_header_s

@@ -14,8 +14,26 @@
 #include "as-util.h"
 
 struct SECTHDR {
-  unsigned char signature[8]; // "Filename", "Pack    "
+  unsigned char signature[8]; // "Filename"
   unsigned long length;
+};
+
+struct PARTHDR {
+  unsigned char signature[8]; // "Pack    "
+  unsigned long index_size;
+  unsigned long part_count;
+};
+
+struct PARTENTRY {
+  //每个part在游戏屏幕中的长宽
+  float screen_width;
+  float screen_height;
+  //每个part在整张图片中左上角坐标的因数，乘以整张图的长或宽为实际坐标
+  float pic_mult_x1;
+  float pic_mult_y1;
+  //每个part在整张图片中右下角坐标的因数，乘以整张图的长或宽为实际坐标
+  float pic_mult_x2;
+  float pic_mult_y2;
 };
 
 struct FNENTRY {
