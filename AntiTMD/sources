@@ -1,0 +1,10 @@
+TARGETNAME=AntiTMD
+TARGETTYPE=DRIVER
+TARGETPATH=obj
+
+INCLUDES=.\
+
+SOURCES = Driver.c\
+          KernelInlineHook.c\
+          Tools.c\
+	      SSDTHook.c\
