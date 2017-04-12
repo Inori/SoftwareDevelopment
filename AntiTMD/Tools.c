@@ -2,10 +2,10 @@
 #include "Tools.h"
 
 
-ULONG_PTR SearchAddressBySig(ULONG_PTR BaseAddr, ULONG Range, PUCHAR Sig, ULONG SigLen)
+VOID* SearchAddressBySig(ULONG_PTR BaseAddr, ULONG Range, PUCHAR Sig, ULONG SigLen)
 {
 	ULONG Len = 0;
-	ULONG_PTR RetAddr = NULL;
+	VOID* RetAddr = NULL;
 
 	if (!MmIsAddressValid(BaseAddr) || Range <= 0)
 		return NULL;
@@ -127,6 +127,9 @@ WCHAR* UsStr(PUNICODE_STRING pusStr1, PUNICODE_STRING pusStr2)
 	return pFindPos;
 
 }
+
+
+
 
 //////////////////////////////////////////////////////////////////////////
 

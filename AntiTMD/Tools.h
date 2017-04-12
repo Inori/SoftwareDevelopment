@@ -2,7 +2,7 @@
 #define TOOLS_H
 
 
-ULONG_PTR SearchAddressBySig(ULONG_PTR BaseAddr, ULONG Range, PUCHAR Sig, ULONG SigLen);
+VOID* SearchAddressBySig(ULONG_PTR BaseAddr, ULONG Range, PUCHAR Sig, ULONG SigLen);
 
 ULONG_PTR FindFuntion(PWCHAR FuncName);
 

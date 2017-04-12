@@ -895,6 +895,7 @@ exit /b -1</Command>
   <ItemGroup>
     <ClInclude Include="KernelInlineHook.h" />
     <ClInclude Include="SSDTHook.h" />
+    <ClInclude Include="SSDTNumber.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="UndocType.h" />
   </ItemGroup>

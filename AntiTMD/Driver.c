@@ -7,6 +7,7 @@
 #include "Tools.h"
 #include "SSDTHook.h"
 #include "UndocType.h"
+#include "SSDTNumber.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -133,8 +134,60 @@ BOOLEAN IsTargetProcess()
 	return (hPid == g_hTargetId);
 }
 
+VOID* FindKiDispatchException()
+{
+	PLONG ServiceTableBase = NULL;
+	PUCHAR pCallAddr = 0;
+	ULONG nCallVal = 0;
+	VOID* pNtRaiseException = NULL;
+	VOID* pKiRaiseException = NULL;
+	VOID* pKiDispatchException = NULL;
+
+	//Xp SP3
+	CHAR pKRETag[] = { 0x52, 0x53, 0x6a, 0x00, 0x51, 0x50 };
+	ULONG nKRETagLen = sizeof(pKRETag);
+
+	CHAR pKDETag[] = {
+		0xff,0x75,0x18,
+		0xff,0xb5,0x00,0xfd,0xff,0xff,
+		0xff,0xb5,0x0c,0xfd,0xff,0xff,
+		0xff,0xb5,0x10,0xfd,0xff,0xff,
+		0x53
+	};
+	ULONG nKDETagLen = sizeof(pKDETag);
+
+	if (!KeServiceDescriptorTable)
+	{
+		return NULL;
+	}
+
+	ServiceTableBase = KeServiceDescriptorTable->ServiceTableBase;
+	pNtRaiseException = ServiceTableBase[0xB5];
+
+	pCallAddr = SearchAddressBySig(pNtRaiseException, 0x100, pKRETag, nKRETagLen);
+	if (!pCallAddr)
+	{
+		return NULL;
+	}
+	pCallAddr += nKRETagLen;
+
+	nCallVal = *(ULONG*)(pCallAddr + 1);
+	pKiRaiseException = pCallAddr + nCallVal + 5;
+
+	pCallAddr = SearchAddressBySig(pKiRaiseException, 0x1000, pKDETag, nKDETagLen);
+	if (!pCallAddr)
+	{
+		return NULL;
+	}
+	pCallAddr += nKDETagLen;
+
+	nCallVal = *(ULONG*)(pCallAddr + 1);
+	pKiDispatchException = pCallAddr + nCallVal + 5;
+
+	return pKiDispatchException;
+
+}
 //////////////////////////////////////////////////////////////////////////
-CONST ULONG NUM_NT_QIP = 0x9A;
 typedef NTSTATUS (NTAPI *pfuncNtQueryInformationProcess)(
 	IN HANDLE ProcessHandle, 
 	IN PROCESSINFOCLASS ProcessInformationClass,
@@ -158,7 +211,6 @@ NTSTATUS NewNtQueryInformationProcess(
 	return (pfuncNtQueryInformationProcess)g_OldNtQueryInformationProcess(ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength);
 }
 
-CONST ULONG NUM_NT_QO = 0xA3;
 typedef NTSTATUS (NTAPI *pfuncNtQueryObject)(IN HANDLE ObjectHandle, 
 	IN OBJECT_INFORMATION_CLASS ObjectInformationClass,
 	OUT PVOID ObjectInformation, 
@@ -173,6 +225,30 @@ NTSTATUS NewNtQueryObject(IN HANDLE ObjectHandle, IN OBJECT_INFORMATION_CLASS Ob
 	}
 
 	return (pfuncNtQueryObject)g_OldNtQueryObject(ObjectHandle, ObjectInformationClass, ObjectInformation, ObjectInformationLength, ReturnLength);
+}
+
+typedef VOID
+(NTAPI *pfuncKiDispatchException) (
+	IN PEXCEPTION_RECORD ExceptionRecord,
+	IN PKEXCEPTION_FRAME ExceptionFrame,
+	IN PKTRAP_FRAME TrapFrame,
+	IN KPROCESSOR_MODE PreviousMode,
+	IN BOOLEAN FirstChance);
+pfuncKiDispatchException KiDispatchException = NULL;
+pfuncKiDispatchException g_OldKiDispatchException = NULL;
+ULONG nKDEPatchLen = 0;
+VOID NewKiDispatchException(
+	IN PEXCEPTION_RECORD ExceptionRecord,
+	IN PKEXCEPTION_FRAME ExceptionFrame,
+	IN PKTRAP_FRAME TrapFrame,
+	IN KPROCESSOR_MODE PreviousMode,
+	IN BOOLEAN FirstChance)
+{
+	if (PreviousMode == UserMode && IsTargetProcess())
+	{
+		DEBUG_PRINT("User Exception Code: %08X", ExceptionRecord->ExceptionCode);
+	}
+	return g_OldKiDispatchException(ExceptionRecord, ExceptionFrame, TrapFrame, PreviousMode, FirstChance);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -225,11 +301,11 @@ VOID CreateProcessNotify(
 
 VOID DriverUnload(PDRIVER_OBJECT pDriverObj)
 {
-	//KernelInlineUnHook(IoAllocateMdl, oldIoAllocateMdl, patch_len);
-	//KernelInlineHookDrop();
+	KernelInlineUnHook(KiDispatchException, g_OldKiDispatchException, nKDEPatchLen);
+	KernelInlineHookDrop();
 
-	UnHookSSDT(NUM_NT_QIP, g_OldNtQueryInformationProcess);
-	UnHookSSDT(NUM_NT_QO, g_OldNtQueryObject);
+	UnHookSSDT(SN_NtQueryInformationProcess, g_OldNtQueryInformationProcess);
+	UnHookSSDT(SN_NtQueryObject, g_OldNtQueryObject);
 
 	PsSetCreateProcessNotifyRoutine(CreateProcessNotify, TRUE);
 }
@@ -248,15 +324,17 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT pDriverObj, PUNICODE_STRING pRegistryString)
 	PsSetCreateProcessNotifyRoutine(CreateProcessNotify, FALSE);
 
 
-	DbgBreakPoint();
+	HookSSDT(SN_NtQueryInformationProcess, NewNtQueryInformationProcess, &g_OldNtQueryInformationProcess);
+	HookSSDT(SN_NtQueryObject, NewNtQueryObject, &g_OldNtQueryObject);
 
-	pFunc = FindKernelFunction(L"KiDispatchException");
-
-	HookSSDT(NUM_NT_QIP, NewNtQueryInformationProcess, &g_OldNtQueryInformationProcess);
-	HookSSDT(NUM_NT_QO, NewNtQueryObject, &g_OldNtQueryObject);
 	//加载HOOK
-	//KernelInlineHookInit();
-	//KernelInlineHook(IoAllocateMdl, newIoAllocateMdl, &oldIoAllocateMdl, &patch_len);
+	KernelInlineHookInit();
+
+	KiDispatchException = FindKiDispatchException();
+	if (KiDispatchException)
+	{
+		KernelInlineHook(KiDispatchException, NewKiDispatchException, &g_OldKiDispatchException, &nKDEPatchLen);
+	}
 
 	//初始化SSDT相关函数
 
