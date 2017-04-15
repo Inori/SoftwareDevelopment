@@ -7,4 +7,6 @@ INCLUDES=.\
 SOURCES = Driver.c\
           KernelInlineHook.c\
           Tools.c\
-	      SSDTHook.c\
+          SSDTHook.c\
+          Undoc.c\
+          HookFuncs.c\

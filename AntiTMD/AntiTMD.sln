@@ -1,62 +1,62 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PassTP", "PassTP.vcxproj", "{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AntiTMD", "AntiTMD.vcxproj", "{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Checked_win7|Win32 = Checked_win7|Win32
 		Checked_win7|x64 = Checked_win7|x64
-		Checked_wlh|Win32 = Checked_wlh|Win32
+		Checked_win7|x86 = Checked_win7|x86
 		Checked_wlh|x64 = Checked_wlh|x64
-		Checked_wnet|Win32 = Checked_wnet|Win32
+		Checked_wlh|x86 = Checked_wlh|x86
 		Checked_wnet|x64 = Checked_wnet|x64
-		Checked_wxp|Win32 = Checked_wxp|Win32
+		Checked_wnet|x86 = Checked_wnet|x86
 		Checked_wxp|x64 = Checked_wxp|x64
-		Free_win7|Win32 = Free_win7|Win32
+		Checked_wxp|x86 = Checked_wxp|x86
 		Free_win7|x64 = Free_win7|x64
-		Free_wlh|Win32 = Free_wlh|Win32
+		Free_win7|x86 = Free_win7|x86
 		Free_wlh|x64 = Free_wlh|x64
-		Free_wnet|Win32 = Free_wnet|Win32
+		Free_wlh|x86 = Free_wlh|x86
 		Free_wnet|x64 = Free_wnet|x64
-		Free_wxp|Win32 = Free_wxp|Win32
+		Free_wnet|x86 = Free_wnet|x86
 		Free_wxp|x64 = Free_wxp|x64
+		Free_wxp|x86 = Free_wxp|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_win7|Win32.ActiveCfg = Checked_win7|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_win7|Win32.Build.0 = Checked_win7|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_win7|x64.ActiveCfg = Checked_win7|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_win7|x64.Build.0 = Checked_win7|x64
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wlh|Win32.ActiveCfg = Checked_wlh|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wlh|Win32.Build.0 = Checked_wlh|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_win7|x86.ActiveCfg = Checked_win7|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_win7|x86.Build.0 = Checked_win7|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wlh|x64.ActiveCfg = Checked_wlh|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wlh|x64.Build.0 = Checked_wlh|x64
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wnet|Win32.ActiveCfg = Checked_wnet|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wnet|Win32.Build.0 = Checked_wnet|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wlh|x86.ActiveCfg = Checked_wlh|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wlh|x86.Build.0 = Checked_wlh|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wnet|x64.ActiveCfg = Checked_wnet|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wnet|x64.Build.0 = Checked_wnet|x64
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wxp|Win32.ActiveCfg = Checked_wxp|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wxp|Win32.Build.0 = Checked_wxp|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wnet|x86.ActiveCfg = Checked_wnet|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wnet|x86.Build.0 = Checked_wnet|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wxp|x64.ActiveCfg = Checked_wxp|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wxp|x64.Build.0 = Checked_wxp|x64
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_win7|Win32.ActiveCfg = Free_win7|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_win7|Win32.Build.0 = Free_win7|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wxp|x86.ActiveCfg = Checked_wxp|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Checked_wxp|x86.Build.0 = Checked_wxp|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_win7|x64.ActiveCfg = Free_win7|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_win7|x64.Build.0 = Free_win7|x64
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wlh|Win32.ActiveCfg = Free_wlh|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wlh|Win32.Build.0 = Free_wlh|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_win7|x86.ActiveCfg = Free_win7|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_win7|x86.Build.0 = Free_win7|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wlh|x64.ActiveCfg = Free_wlh|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wlh|x64.Build.0 = Free_wlh|x64
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wnet|Win32.ActiveCfg = Free_wnet|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wnet|Win32.Build.0 = Free_wnet|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wlh|x86.ActiveCfg = Free_wlh|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wlh|x86.Build.0 = Free_wlh|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wnet|x64.ActiveCfg = Free_wnet|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wnet|x64.Build.0 = Free_wnet|x64
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wxp|Win32.ActiveCfg = Free_wxp|Win32
-		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wxp|Win32.Build.0 = Free_wxp|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wnet|x86.ActiveCfg = Free_wnet|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wnet|x86.Build.0 = Free_wnet|Win32
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wxp|x64.ActiveCfg = Free_wxp|x64
 		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wxp|x64.Build.0 = Free_wxp|x64
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wxp|x86.ActiveCfg = Free_wxp|Win32
+		{E6F15F23-5BEB-438B-858D-D8E2BC290C3C}.Free_wxp|x86.Build.0 = Free_wxp|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

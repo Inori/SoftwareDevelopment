@@ -888,16 +888,19 @@ exit /b -1</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Driver.c" />
+    <ClCompile Include="HookFuncs.c" />
     <ClCompile Include="KernelInlineHook.c" />
     <ClCompile Include="SSDTHook.c" />
     <ClCompile Include="Tools.c" />
+    <ClCompile Include="Undoc.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HookFuncs.h" />
     <ClInclude Include="KernelInlineHook.h" />
     <ClInclude Include="SSDTHook.h" />
     <ClInclude Include="SSDTNumber.h" />
     <ClInclude Include="Tools.h" />
-    <ClInclude Include="UndocType.h" />
+    <ClInclude Include="Undoc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

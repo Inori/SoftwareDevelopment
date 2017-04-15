@@ -23,6 +23,12 @@
     <ClCompile Include="SSDTHook.c">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Undoc.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="HookFuncs.c">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KernelInlineHook.h">
@@ -34,10 +40,13 @@
     <ClInclude Include="SSDTHook.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="UndocType.h">
+    <ClInclude Include="SSDTNumber.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="SSDTNumber.h">
+    <ClInclude Include="Undoc.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="HookFuncs.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

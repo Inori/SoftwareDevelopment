@@ -1,6 +1,8 @@
 #ifndef SSDT_HOOK_H
 #define SSDT_HOOK_H
 
+#include "SSDTNumber.h"
+
 typedef struct _SYSTEM_SERVICE_TABLE{
 	PVOID  		ServiceTableBase;
 	PVOID  		ServiceCounterTableBase;
@@ -19,7 +21,7 @@ typedef struct _SERVICE_DESCRIPTOR_TABLE{
 
 extern PSYSTEM_SERVICE_TABLE KeServiceDescriptorTable;
 
-
+PVOID GetSSDTFuncAddr(ULONG nIndex);
 BOOLEAN HookSSDT(ULONG index, PVOID ProxyFunc, PVOID* OldFunc);
 BOOLEAN UnHookSSDT(ULONG index, PVOID OldFunc);
 

@@ -4,6 +4,24 @@
 #include "Tools.h"
 #include "KernelInlineHook.h"
 
+PVOID GetSSDTFuncAddr(ULONG nIndex)
+{
+	PLONG ServiceTableBase = NULL;
+
+	if (!KeServiceDescriptorTable)
+	{
+		return NULL;
+	}
+
+	if (nIndex >= KeServiceDescriptorTable->NumberOfServices)
+	{
+		return NULL;
+	}
+
+	ServiceTableBase = KeServiceDescriptorTable->ServiceTableBase;
+	return ServiceTableBase[nIndex];
+}
+
 BOOLEAN HookSSDT(ULONG index, PVOID ProxyFunc, PVOID* OldFunc)
 {
 	PLONG ServiceTableBase = NULL;
