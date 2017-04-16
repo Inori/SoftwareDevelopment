@@ -106,7 +106,75 @@ typedef struct _KTRAP_FRAME {
 typedef KTRAP_FRAME *PKTRAP_FRAME;
 typedef KTRAP_FRAME *PKEXCEPTION_FRAME;
 
+
+
 //structures
+
+typedef struct _SYSTEM_THREAD_INFORMATION
+{
+	LARGE_INTEGER KernelTime;
+	LARGE_INTEGER UserTime;
+	LARGE_INTEGER CreateTime;
+	ULONG WaitTime;
+	PVOID StartAddress;
+	CLIENT_ID ClientId;
+	KPRIORITY Priority;
+	LONG BasePriority;
+	ULONG ContextSwitches;
+	ULONG ThreadState;
+	ULONG WaitReason;
+} SYSTEM_THREAD_INFORMATION, *PSYSTEM_THREAD_INFORMATION;
+
+typedef struct _SYSTEM_EXTENDED_THREAD_INFORMATION
+{
+	SYSTEM_THREAD_INFORMATION ThreadInfo;
+	PVOID StackBase;
+	PVOID StackLimit;
+	PVOID Win32StartAddress;
+	PVOID TebAddress; /* This is only filled in on Vista and above */
+	ULONG_PTR Reserved2;
+	ULONG_PTR Reserved3;
+	ULONG_PTR Reserved4;
+} SYSTEM_EXTENDED_THREAD_INFORMATION, *PSYSTEM_EXTENDED_THREAD_INFORMATION;
+
+typedef struct _SYSTEM_PROCESS_INFORMATION
+{
+	ULONG NextEntryOffset;
+	ULONG NumberOfThreads;
+	LARGE_INTEGER SpareLi1;
+	LARGE_INTEGER SpareLi2;
+	LARGE_INTEGER SpareLi3;
+	LARGE_INTEGER CreateTime;
+	LARGE_INTEGER UserTime;
+	LARGE_INTEGER KernelTime;
+	UNICODE_STRING ImageName;
+	KPRIORITY BasePriority;
+	HANDLE UniqueProcessId;
+	HANDLE InheritedFromUniqueProcessId;
+	ULONG HandleCount;
+	ULONG SessionId;
+	ULONG_PTR PageDirectoryBase;
+	SIZE_T PeakVirtualSize;
+	SIZE_T VirtualSize;
+	ULONG PageFaultCount;
+	SIZE_T PeakWorkingSetSize;
+	SIZE_T WorkingSetSize;
+	SIZE_T QuotaPeakPagedPoolUsage;
+	SIZE_T QuotaPagedPoolUsage;
+	SIZE_T QuotaPeakNonPagedPoolUsage;
+	SIZE_T QuotaNonPagedPoolUsage;
+	SIZE_T PagefileUsage;
+	SIZE_T PeakPagefileUsage;
+	SIZE_T PrivatePageCount;
+	LARGE_INTEGER ReadOperationCount;
+	LARGE_INTEGER WriteOperationCount;
+	LARGE_INTEGER OtherOperationCount;
+	LARGE_INTEGER ReadTransferCount;
+	LARGE_INTEGER WriteTransferCount;
+	LARGE_INTEGER OtherTransferCount;
+	SYSTEM_THREAD_INFORMATION Threads[1];
+} SYSTEM_PROCESS_INFORMATION, *PSYSTEM_PROCESS_INFORMATION;
+
 typedef struct _OBJECT_TYPE_INFORMATION
 {
 	UNICODE_STRING TypeName;
@@ -114,11 +182,23 @@ typedef struct _OBJECT_TYPE_INFORMATION
 	ULONG TotalNumberOfObjects;
 } OBJECT_TYPE_INFORMATION, *POBJECT_TYPE_INFORMATION;
 
+typedef struct _OBJECT_TYPES_INFORMATION
+{
+	ULONG NumberOfTypes;
+	OBJECT_TYPE_INFORMATION TypeInformation[1];
+} OBJECT_TYPES_INFORMATION, *POBJECT_TYPES_INFORMATION;
+
 typedef struct _OBJECT_ALL_INFORMATION
 {
 	ULONG NumberOfObjects;
 	OBJECT_TYPE_INFORMATION ObjectTypeInformation[1];
 } OBJECT_ALL_INFORMATION, *POBJECT_ALL_INFORMATION;
+
+typedef struct _SYSTEM_KERNEL_DEBUGGER_INFORMATION
+{
+	BOOLEAN DebuggerEnabled;
+	BOOLEAN DebuggerNotPresent;
+} SYSTEM_KERNEL_DEBUGGER_INFORMATION, *PSYSTEM_KERNEL_DEBUGGER_INFORMATION;
 
 //enums
 typedef enum _UNDOC_OBJECT_INFORMATION_CLASS
@@ -182,6 +262,11 @@ typedef NTSTATUS(NTAPI* NTCLOSE)(
 	);
 
 typedef NTSTATUS(NTAPI* NTSETCONTEXTTHREAD)(
+	IN HANDLE ThreadHandle,
+	IN PCONTEXT Context
+	);
+
+typedef NTSTATUS(NTAPI* NTGETCONTEXTTHREAD)(
 	IN HANDLE ThreadHandle,
 	IN PCONTEXT Context
 	);

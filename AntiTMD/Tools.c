@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <ntstrsafe.h>
 #include "Tools.h"
 #include "SSDTHook.h"
 #include "Undoc.h"
@@ -169,6 +169,60 @@ void DebugPrint(const char* function, const char* format, ...)
 }
 
 
+void LogToFile(const char* function, const char* format, ...)
+{
+	char szTemp[DBG_STR_LEN] = { 0 };
+	char szDbgStr[DBG_STR_LEN] = { 0 };
+	UNICODE_STRING FileName;
+	OBJECT_ATTRIBUTES objAttr;
+	HANDLE handle;
+	IO_STATUS_BLOCK ioStatusBlock;
+	NTSTATUS ntstatus;
+
+	va_list   arg_list;
+
+	sprintf(szDbgStr, "Asuka->[%s]\t", function);
+
+	va_start(arg_list, format);
+
+	vsprintf(szTemp, format, arg_list);
+
+	va_end(arg_list);
+
+	strcat(szDbgStr, szTemp);
+	strcat(szDbgStr, "\n");
+
+	
+	RtlInitUnicodeString(&FileName, L"\\DosDevices\\C:\\AntiTmd.log");
+	InitializeObjectAttributes(&objAttr, &FileName,
+		OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
+		NULL, NULL);
+	if (KeGetCurrentIrql() != PASSIVE_LEVEL)
+	{
+#ifdef _DEBUG
+		DbgPrint("[TITANHIDE] KeGetCurrentIrql != PASSIVE_LEVEL!\n");
+#endif
+		return;
+	}
+
+	ntstatus = ZwCreateFile(&handle,
+		FILE_APPEND_DATA,
+		&objAttr, &ioStatusBlock, NULL,
+		FILE_ATTRIBUTE_NORMAL,
+		FILE_SHARE_WRITE | FILE_SHARE_READ,
+		FILE_OPEN_IF,
+		FILE_SYNCHRONOUS_IO_NONALERT,
+		NULL, 0);
+	if (NT_SUCCESS(ntstatus))
+	{
+		size_t cb;
+		ntstatus = RtlStringCbLengthA(szDbgStr, sizeof(szDbgStr), &cb);
+		if (NT_SUCCESS(ntstatus))
+			ZwWriteFile(handle, NULL, NULL, NULL, &ioStatusBlock, szDbgStr, (ULONG)cb, NULL, NULL);
+		ZwClose(handle);
+	}
+}
+
 PUNICODE_STRING GetProcNameByEproc(IN PEPROCESS pEproc)
 /*++
 
@@ -298,4 +352,51 @@ VOID* FindKiDispatchException()
 
 }
 
+PVOID SetDebugPort(PEPROCESS Process, PVOID DebugPort)
+{
+	const int DebugPortOffset = 0x0bc;
+	PVOID* pDebugPort = NULL;
+
+	pDebugPort = (PVOID*)((unsigned char*)Process + DebugPortOffset);
+	return InterlockedExchangePointer(pDebugPort, DebugPort);
+}
+
+const WCHAR * BadProcessnameList[] =
+{
+	L"ollydbg.exe",
+	L"x64_dbg.exe",
+	L"windbg.exe",
+	L"ImportREC.exe",
+};
+const int BadProcessnameCount = 4;
+
+BOOLEAN IsProcessBad(PUNICODE_STRING process)
+{
+	WCHAR nameCopy[400];
+	int i = 0;
+
+	if (!process || process->Length == 0 || !process->Buffer)
+	{
+		return FALSE;
+	}
+
+	memset(nameCopy, 0, sizeof(nameCopy));
+
+	if (process->Length > (sizeof(nameCopy) - sizeof(WCHAR)))
+	{
+		return FALSE;
+	}
+
+	memcpy(nameCopy, process->Buffer, process->Length);
+
+	for (i = 0; i < BadProcessnameCount; i++)
+	{
+		if (!_wcsnicmp(nameCopy, BadProcessnameList[i], process->Length))
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
 
