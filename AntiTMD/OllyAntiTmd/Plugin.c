@@ -1,16 +1,23 @@
 #include <Windows.h>
 #include "Plugin.h"
+#include "Tools.h"
 
 
-BOOL WINAPI DllEntryPoint(HINSTANCE hi, DWORD reason, LPVOID reserved) {
-	//if (reason == DLL_PROCESS_ATTACH)
-	//	hinst = hi;                          // Mark plugin instance
-	return 1;                            // Report success
+HINSTANCE g_hDllInst = NULL;
+BOOL g_bFirstLoadDll = TRUE;
+
+BOOL WINAPI DllEntryPoint(HINSTANCE hi, DWORD reason, LPVOID reserved)
+{
+	if (reason == DLL_PROCESS_ATTACH)
+	{
+		g_hDllInst = hi;
+	}
+	return 1;                            
 };
 
 
-// Report plugin name and return version of plugin interface.
-extc int _export cdecl ODBG_Plugindata(char shortname[32]) {
+extc int _export cdecl ODBG_Plugindata(char shortname[32]) 
+{
 	strcpy(shortname, "OllyAntiTmd");    // Name of command line plugin
 	return PLUGIN_VERSION;
 };
@@ -20,9 +27,37 @@ extc int _export cdecl ODBG_Plugindata(char shortname[32]) {
 // extentions, do not use it.
 extc int _export cdecl ODBG_Plugininit(int ollydbgversion, HWND hw, ulong *features)
 {
-	int a = 0;
-	return a;
+	g_bFirstLoadDll = TRUE;
+	return 0;
 };
+
+extc void _export cdecl ODBG_Pluginreset(void)
+{
+	g_bFirstLoadDll = TRUE;
+}
+
+VOID OnLoadDllEvent(DEBUG_EVENT* event)
+{
+	DWORD dwPid = 0;
+	static BOOL bSecondLoadDll = FALSE;
+	if (!event)
+	{
+		return;
+	}
+	dwPid = event->dwProcessId;
+
+	if (g_bFirstLoadDll)
+	{
+		SetRemotePebBeingDebuged(dwPid, 0);
+		g_bFirstLoadDll = FALSE;
+		bSecondLoadDll = TRUE;
+	}
+	else if (bSecondLoadDll)
+	{
+		SetRemotePebBeingDebuged(dwPid, 1);
+		bSecondLoadDll = FALSE;
+	}
+}
 
 extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* event)
 {
@@ -40,7 +75,7 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* event)
 	case CREATE_PROCESS_DEBUG_EVENT:
 		break;
 	case LOAD_DLL_DEBUG_EVENT:
-		MessageBoxA(NULL, event->u.LoadDll.lpImageName, "OllyAntiTmd", MB_OK);
+		OnLoadDllEvent(event);
 		break;
 	default:
 		break;

@@ -151,6 +151,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Plugin.c" />
+    <ClCompile Include="Tools.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ntdll.h" />
+    <ClInclude Include="Tools.h" />
+    <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
