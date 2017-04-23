@@ -5,6 +5,7 @@
 
 HINSTANCE g_hDllInst = NULL;
 BOOL g_bFirstLoadDll = TRUE;
+BOOL g_bFirstException = TRUE;
 
 BOOL WINAPI DllEntryPoint(HINSTANCE hi, DWORD reason, LPVOID reserved)
 {
@@ -28,12 +29,14 @@ extc int _export cdecl ODBG_Plugindata(char shortname[32])
 extc int _export cdecl ODBG_Plugininit(int ollydbgversion, HWND hw, ulong *features)
 {
 	g_bFirstLoadDll = TRUE;
+	g_bFirstException = TRUE;
 	return 0;
 };
 
 extc void _export cdecl ODBG_Pluginreset(void)
 {
 	g_bFirstLoadDll = TRUE;
+	g_bFirstException = TRUE;
 }
 
 VOID OnLoadDllEvent(DEBUG_EVENT* event)
@@ -59,6 +62,22 @@ VOID OnLoadDllEvent(DEBUG_EVENT* event)
 	}
 }
 
+void OnExceptionEvent(DEBUG_EVENT* event)
+{
+	DWORD dwPid = 0;
+	if (!event)
+	{
+		return;
+	}
+	dwPid = event->dwProcessId;
+
+	if (g_bFirstException && event->u.Exception.ExceptionRecord.ExceptionCode == STATUS_BREAKPOINT)
+	{
+		SetRemotePebBeingDebuged(dwPid, 0);
+		g_bFirstException = FALSE;
+	}
+}
+
 extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* event)
 {
 	DWORD dwEventCode = 0;
@@ -72,6 +91,9 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* event)
 
 	switch (dwEventCode)
 	{
+	case EXCEPTION_DEBUG_EVENT:
+		OnExceptionEvent(event);
+		break;
 	case CREATE_PROCESS_DEBUG_EVENT:
 		break;
 	case LOAD_DLL_DEBUG_EVENT:

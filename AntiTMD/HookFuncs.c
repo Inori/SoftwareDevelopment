@@ -478,6 +478,7 @@ VOID InstallHooks()
 	HookSSDT(SN_NtContinue, NewNtContinue, &g_OldNtContinue);
 	HookSSDT(SN_NtDuplicateObject, NewNtDuplicateObject, &g_OldNtDuplicateObject);
 	HookSSDT(SN_NtSetInformationProcess, NewNtSetInformationProcess, &g_OldNtSetInformationProcess);
+	HookSSDT(SN_NtSetInformationThread, NewNtSetInformationThread, &g_OldNtSetInformationThread);
 	HookSSDT(SN_NtQueryInformationProcess, NewNtQueryInformationProcess, &g_OldNtQueryInformationProcess);
 	HookSSDT(SN_NtSystemDebugControl, NewNtSystemDebugControl, &g_OldNtSystemDebugControl);
 	//º”‘ÿHOOK
@@ -499,6 +500,7 @@ VOID UnInstallHooks()
 	UnHookSSDT(SN_NtContinue, g_OldNtContinue);
 	UnHookSSDT(SN_NtDuplicateObject, g_OldNtDuplicateObject);
 	UnHookSSDT(SN_NtSetInformationProcess, g_OldNtSetInformationProcess);
+	UnHookSSDT(SN_NtSetInformationThread, g_OldNtSetInformationThread);
 	UnHookSSDT(SN_NtQueryInformationProcess, g_OldNtQueryInformationProcess);
 	UnHookSSDT(SN_NtSystemDebugControl, g_OldNtSystemDebugControl);
 }
