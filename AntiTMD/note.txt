@@ -1,0 +1,60 @@
+char __stdcall LdrpInitializeExecutionOptions(int a1, _PEB *Peb, int a3)
+{
+  bool v4; // zf@9
+  _RTL_USER_PROCESS_PARAMETERS *v5; // eax@17
+  __int16 v6; // [esp+Ch] [ebp-40h]@17
+  __int16 v7; // [esp+Eh] [ebp-3Eh]@17
+  char *v8; // [esp+10h] [ebp-3Ch]@11
+  int v9; // [esp+14h] [ebp-38h]@1
+  char usNoDebugHeap; // [esp+18h] [ebp-34h]@17
+  unsigned int Dst; // [esp+1Ch] [ebp-30h]@5
+  int v12; // [esp+20h] [ebp-2Ch]@1
+  char v13; // [esp+27h] [ebp-25h]@1
+  char v14; // [esp+28h] [ebp-24h]@17
+
+  v9 = a1;
+  v13 = 0;
+  if ( LdrpOpenImageFileOptionsKey(a1, &v12) >= 0 )
+  {
+    v13 = 1;
+    if ( LdrpQueryImageFileKeyOption(v12, (int)&word_7C95D7CE, 4, &Dst, 4u, 0) >= 0 )
+    {
+      Dst = (Dst != 0) + 1;
+      ZwSetInformationProcess(-1, 34, &Dst, 4);
+    }
+    LdrpQueryImageFileKeyOption(v12, (int)&word_7C95D7EE, 4, &RtlpDisableHeapLookaside, 4u, 0);
+    LdrpQueryImageFileKeyOption(v12, (int)&word_7C95D81A, 4, &RtlpShutdownProcessFlags, 4u, 0);
+    Dst = 0;
+    LdrpQueryImageFileKeyOption(v12, (int)L"MinimumStackCommitInBytes", 4, &Dst, 4u, 0);
+    if ( Peb->MinimumStackCommit < Dst )
+      Peb->MinimumStackCommit = Dst;
+    v4 = (BYTE1(Peb->NtGlobalFlag) & 1) == 0;
+    LOBYTE(Dst) = 0;
+    if ( !v4 )
+      LOBYTE(Dst) = 1;
+    if ( LdrpQueryImageFileKeyOption(v12, (int)L"GlobalFlag", 4, &v8, 4u, 0) >= 0 )
+      Peb->NtGlobalFlag = (unsigned int)v8;
+    if ( Peb->NtGlobalFlag & 0x2000100 )
+      LdrpInitializeApplicationVerifierPackage(v9, (int)Peb, Dst, 1);
+    NtClose(v12);
+  }
+  else if ( Peb->NtGlobalFlag & 0x2000100 )
+  {
+    LdrpInitializeApplicationVerifierPackage(a1, (int)Peb, 1, 0);
+  }
+  else if ( Peb->BeingDebugged )
+  {
+    RtlInitUnicodeString(&usNoDebugHeap, L"_NO_DEBUG_HEAP");
+    v8 = &v14;
+    v5 = Peb->ProcessParameters;
+    v6 = 0;
+    v7 = 32;
+    if ( RtlQueryEnvironmentVariable_U(v5->Environment, &usNoDebugHeap, &v6) < 0
+      || RtlUnicodeStringToInteger(&v6, 0, &v9) < 0
+      || !v9 )
+    {
+      Peb->NtGlobalFlag |= 0x70u;               // FLG_HEAP_ENABLE_TAIL_CHECK|FLG_HEAP_ENABLE_FREE_CHECK|FLG_HEAP_VALIDATE_PARAMETERS
+    }
+  }
+  return v13;
+}
