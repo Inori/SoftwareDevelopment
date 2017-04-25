@@ -1,3 +1,35 @@
+CreateProcessInternalW
+	DbgUiConnectToDbg - DebugObject
+	NtCreateProcessEx
+		PspCreateProcess
+			PspMapSystemDll
+			MmCreatePeb - BeingDebugged
+	NtCreateThread
+-----------------------------------------------------------------------------
+		PspUserThreadStartup
+			DbgkCreateThread - EVENT_CRTEATE_PROCESS EVENT_LOAD_DLL
+			KiInitializeUserApc - LdrInitializeThunk
+				LdrInitializeThunk
+					LdrpInitialize(or LdrpInit)
+						LdrpInitializeExecutionOptions -  Peb->NtGlobalFlag
+						LdrpInitializeProcess
+							RtlCreateHeap - HeapFlag ForceFlag
+							DbgBreakPoint - First BreakPoint
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 char __stdcall LdrpInitializeExecutionOptions(int a1, _PEB *Peb, int a3)
 {
   bool v4; // zf@9
@@ -58,3 +90,9 @@ char __stdcall LdrpInitializeExecutionOptions(int a1, _PEB *Peb, int a3)
   }
   return v13;
 }
+
+
+
+
+
+
