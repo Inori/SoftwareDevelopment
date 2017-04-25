@@ -163,9 +163,15 @@ VOID NewKiDispatchException(
 	IN KPROCESSOR_MODE PreviousMode,
 	IN BOOLEAN FirstChance)
 {
+	ULONG ExceptionCode = 0;
 	if (PreviousMode == UserMode && IsTargetProcess())
 	{
-		DEBUG_PRINT("User Exception Code: %08X", ExceptionRecord->ExceptionCode);
+		ExceptionCode = ExceptionRecord->ExceptionCode;
+		DEBUG_PRINT("User Exception Code: %08X", ExceptionCode);
+		if (ExceptionCode == STATUS_BREAKPOINT)
+		{
+			DbgBreakPoint();
+		}
 	}
 	return g_OldKiDispatchException(ExceptionRecord, ExceptionFrame, TrapFrame, PreviousMode, FirstChance);
 }
@@ -482,15 +488,15 @@ VOID InstallHooks()
 	HookSSDT(SN_NtQueryInformationProcess, NewNtQueryInformationProcess, &g_OldNtQueryInformationProcess);
 	HookSSDT(SN_NtSystemDebugControl, NewNtSystemDebugControl, &g_OldNtSystemDebugControl);
 	//º”‘ÿHOOK
-	//KernelInlineHookInit();
-
+	KernelInlineHookInit();
+	HookKiDispatchException();
 	
 }
 
 VOID UnInstallHooks()
 {
-	//KernelInlineUnHook(KiDispatchException, g_OldKiDispatchException, nKDEPatchLen);
-	//KernelInlineHookDrop();
+	KernelInlineUnHook(KiDispatchException, g_OldKiDispatchException, nKDEPatchLen);
+	KernelInlineHookDrop();
 
 	UnHookSSDT(SN_NtQueryObject, g_OldNtQueryObject);
 	UnHookSSDT(SN_NtQuerySystemInformation, g_OldNtQuerySystemInformation);
