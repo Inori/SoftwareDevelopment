@@ -2,7 +2,9 @@ CreateProcessInternalW
 	DbgUiConnectToDbg - DebugObject
 	NtCreateProcessEx
 		PspCreateProcess
-			PspMapSystemDll
+			Process->DebugPort = DebugPortObject;
+			MmInitializeProcessAddressSpace
+				PsMapSystemDll
 			MmCreatePeb - BeingDebugged
 	NtCreateThread
 -----------------------------------------------------------------------------
@@ -15,6 +17,7 @@ CreateProcessInternalW
 						LdrpInitializeProcess
 							RtlCreateHeap - HeapFlag ForceFlag
 							DbgBreakPoint - First BreakPoint
+
 
 
 
