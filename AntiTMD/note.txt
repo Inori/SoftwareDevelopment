@@ -16,6 +16,7 @@ CreateProcessInternalW
 						LdrpInitializeExecutionOptions -  Peb->NtGlobalFlag
 						LdrpInitializeProcess
 							RtlCreateHeap - HeapFlag ForceFlag
+							LdrpLoadDll("kernel32.dll") - EVENT_LOAD_DLL
 							DbgBreakPoint - First BreakPoint
 
 
