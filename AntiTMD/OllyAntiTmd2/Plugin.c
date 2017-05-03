@@ -13,27 +13,31 @@ BOOL WINAPI DllEntryPoint(HINSTANCE hi, DWORD reason, LPVOID reserved)
 	{
 		g_hDllInst = hi;
 	}
-	return 1;                            
+	return 1;
 };
 
 
-extc int _export cdecl ODBG_Plugindata(char shortname[32]) 
+extc int _export cdecl ODBG2_Pluginquery(int ollydbgversion, ulong *features,
+	wchar_t pluginname[SHORTNAME], wchar_t pluginversion[SHORTNAME])
 {
-	strcpy(shortname, "OllyAntiTmd");    // Name of command line plugin
-	return PLUGIN_VERSION;
+	if (ollydbgversion < 201)
+		return 0;
+	wcscpy(pluginname, L"OllyAntiTmd");       // Name of plugin
+	wcscpy(pluginversion, L"2.00.01");       // Version of plugin
+	return PLUGIN_VERSION;               // Expected API version
 };
 
 // OllyDbg calls this obligatory function once during startup. I place all
 // one-time initializations here. Parameter features is reserved for future
 // extentions, do not use it.
-extc int _export cdecl ODBG_Plugininit(int ollydbgversion, HWND hw, ulong *features)
+extc int _export cdecl ODBG2_Plugininit()
 {
 	g_bFirstLoadDll = TRUE;
 	g_bFirstException = TRUE;
 	return 0;
 };
 
-extc void _export cdecl ODBG_Pluginreset(void)
+extc void _export cdecl ODBG2_Pluginreset(void)
 {
 	g_bFirstLoadDll = TRUE;
 	g_bFirstException = TRUE;
@@ -78,7 +82,7 @@ void OnExceptionEvent(DEBUG_EVENT* event)
 	}
 }
 
-extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* event)
+extc void _export cdecl ODBG2_Pluginmainloop(DEBUG_EVENT* event)
 {
 	DWORD dwEventCode = 0;
 
@@ -103,4 +107,19 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* event)
 		break;
 	}
 };
+
+static t_menu mainmenu[] = {
+	{ L"Test",
+	L"Test",
+	K_NONE, NULL, NULL, 0 },
+	{ NULL, NULL, K_NONE, NULL, NULL, 0 }
+};
+
+
+extc t_menu * __cdecl ODBG2_Pluginmenu(wchar_t *type) {
+	if (wcscmp(type, PWM_MAIN) == 0)
+		// Main menu.
+		return mainmenu;
+	return NULL;                         // No menu
+}
 

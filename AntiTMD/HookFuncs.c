@@ -164,13 +164,16 @@ VOID NewKiDispatchException(
 	IN BOOLEAN FirstChance)
 {
 	ULONG ExceptionCode = 0;
+	ULONG IsHWBP = 0;
 	if (PreviousMode == UserMode && IsTargetProcess())
 	{
 		ExceptionCode = ExceptionRecord->ExceptionCode;
-		DEBUG_PRINT("User Exception Code: %08X", ExceptionCode);
-		if (ExceptionCode == STATUS_BREAKPOINT)
+		IsHWBP = TrapFrame->Dr6 & 0x0F;
+	
+		if (ExceptionCode == STATUS_SINGLE_STEP && IsHWBP)
 		{
-			DbgBreakPoint();
+			DEBUG_PRINT("HWBP DR0: %08X, DR1: %08X", TrapFrame->Dr0, TrapFrame->Dr1);
+			//DbgBreakPoint();
 		}
 	}
 	return g_OldKiDispatchException(ExceptionRecord, ExceptionFrame, TrapFrame, PreviousMode, FirstChance);
@@ -185,6 +188,20 @@ VOID HookKiDispatchException()
 	}
 }
 
+VOID* KiSystemService = (VOID*)0x8054261A;
+VOID* g_OldKiSystemService = NULL;
+ULONG nKSSPatchLen = 0;
+VOID __declspec(naked) NewKiSystemService()
+{
+	__asm
+	{
+		//pushad
+		//pushfd
+		//popfd
+		//popad
+		jmp g_OldKiSystemService
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////
 NTQUERYOBJECT g_OldNtQueryObject = NULL;
@@ -412,7 +429,7 @@ NTSTATUS NewNtQueryInformationProcess(
 	status = (NTQUERYINFORMATIONPROCESS)g_OldNtQueryInformationProcess(ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength);
 	if (NT_SUCCESS(status) && IsTargetProcess())
 	{
-		//DEBUG_PRINT("ProcHandle: %d Class: %d\n", ProcessHandle, ProcessInformationClass);
+		DEBUG_PRINT("ProcHandle: %d Class: %d\n", ProcessHandle, ProcessInformationClass);
 		if (ProcessInformation != 0 && ProcessInformationLength != 0)
 		{
 			if (ProcessInformationClass == ProcessDebugFlags)
@@ -476,37 +493,39 @@ VOID InstallHooks()
 {
 	ExInitializeFastMutex(&g_DebugPortMutex);
 
-	HookSSDT(SN_NtQueryObject, NewNtQueryObject, &g_OldNtQueryObject);
-	HookSSDT(SN_NtQuerySystemInformation, NewNtQuerySystemInformation, &g_OldNtQuerySystemInformation);
-	HookSSDT(SN_NtClose, NewNtClose, &g_OldNtClose);
+	//HookSSDT(SN_NtQueryObject, NewNtQueryObject, &g_OldNtQueryObject);
+	//HookSSDT(SN_NtQuerySystemInformation, NewNtQuerySystemInformation, &g_OldNtQuerySystemInformation);
+	//HookSSDT(SN_NtClose, NewNtClose, &g_OldNtClose);
 	HookSSDT(SN_NtSetContextThread, NewNtSetContextThread, &g_OldNtSetContextThread);
 	HookSSDT(SN_NtGetContextThread, NewNtGetContextThread, &g_OldNtGetContextThread);
-	HookSSDT(SN_NtContinue, NewNtContinue, &g_OldNtContinue);
-	HookSSDT(SN_NtDuplicateObject, NewNtDuplicateObject, &g_OldNtDuplicateObject);
-	HookSSDT(SN_NtSetInformationProcess, NewNtSetInformationProcess, &g_OldNtSetInformationProcess);
+	//HookSSDT(SN_NtContinue, NewNtContinue, &g_OldNtContinue);
+	//HookSSDT(SN_NtDuplicateObject, NewNtDuplicateObject, &g_OldNtDuplicateObject);
+	//HookSSDT(SN_NtSetInformationProcess, NewNtSetInformationProcess, &g_OldNtSetInformationProcess);
 	HookSSDT(SN_NtSetInformationThread, NewNtSetInformationThread, &g_OldNtSetInformationThread);
-	HookSSDT(SN_NtQueryInformationProcess, NewNtQueryInformationProcess, &g_OldNtQueryInformationProcess);
-	HookSSDT(SN_NtSystemDebugControl, NewNtSystemDebugControl, &g_OldNtSystemDebugControl);
+	//HookSSDT(SN_NtQueryInformationProcess, NewNtQueryInformationProcess, &g_OldNtQueryInformationProcess);
+	//HookSSDT(SN_NtSystemDebugControl, NewNtSystemDebugControl, &g_OldNtSystemDebugControl);
 	//º”‘ÿHOOK
 	KernelInlineHookInit();
 	HookKiDispatchException();
-	
+
+	//KernelInlineHook(KiSystemService, NewKiSystemService, &g_OldKiSystemService, &nKSSPatchLen);
 }
 
 VOID UnInstallHooks()
 {
+	//KernelInlineUnHook(KiSystemService, g_OldKiSystemService, nKSSPatchLen);
 	KernelInlineUnHook(KiDispatchException, g_OldKiDispatchException, nKDEPatchLen);
 	KernelInlineHookDrop();
 
-	UnHookSSDT(SN_NtQueryObject, g_OldNtQueryObject);
-	UnHookSSDT(SN_NtQuerySystemInformation, g_OldNtQuerySystemInformation);
-	UnHookSSDT(SN_NtClose, g_OldNtClose);
+	//UnHookSSDT(SN_NtQueryObject, g_OldNtQueryObject);
+	//UnHookSSDT(SN_NtQuerySystemInformation, g_OldNtQuerySystemInformation);
+	//UnHookSSDT(SN_NtClose, g_OldNtClose);
 	UnHookSSDT(SN_NtSetContextThread, g_OldNtSetContextThread);
 	UnHookSSDT(SN_NtGetContextThread, g_OldNtGetContextThread);
-	UnHookSSDT(SN_NtContinue, g_OldNtContinue);
-	UnHookSSDT(SN_NtDuplicateObject, g_OldNtDuplicateObject);
-	UnHookSSDT(SN_NtSetInformationProcess, g_OldNtSetInformationProcess);
+	//UnHookSSDT(SN_NtContinue, g_OldNtContinue);
+	//UnHookSSDT(SN_NtDuplicateObject, g_OldNtDuplicateObject);
+	//UnHookSSDT(SN_NtSetInformationProcess, g_OldNtSetInformationProcess);
 	UnHookSSDT(SN_NtSetInformationThread, g_OldNtSetInformationThread);
-	UnHookSSDT(SN_NtQueryInformationProcess, g_OldNtQueryInformationProcess);
-	UnHookSSDT(SN_NtSystemDebugControl, g_OldNtSystemDebugControl);
+	//UnHookSSDT(SN_NtQueryInformationProcess, g_OldNtQueryInformationProcess);
+	//UnHookSSDT(SN_NtSystemDebugControl, g_OldNtSystemDebugControl);
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Types.h"
 #include "ntdll.h"
 
 typedef struct _PEB32
