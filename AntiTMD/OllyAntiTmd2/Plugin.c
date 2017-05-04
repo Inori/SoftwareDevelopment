@@ -90,6 +90,16 @@ void OnExceptionEvent(DEBUG_EVENT* event)
 	}
 }
 
+void OnCreateProcessEvent(DEBUG_EVENT* event)
+{
+	if (!event)
+	{
+		return;
+	}
+
+	SetWindowTextW(hwollymain, ANTI_TMD_WIND_TITLE);
+}
+
 extc void _export cdecl ODBG2_Pluginmainloop(DEBUG_EVENT* event)
 {
 	DWORD dwEventCode = 0;
@@ -107,6 +117,7 @@ extc void _export cdecl ODBG2_Pluginmainloop(DEBUG_EVENT* event)
 		OnExceptionEvent(event);
 		break;
 	case CREATE_PROCESS_DEBUG_EVENT:
+		OnCreateProcessEvent(event);
 		break;
 	case LOAD_DLL_DEBUG_EVENT:
 		OnLoadDllEvent(event);
