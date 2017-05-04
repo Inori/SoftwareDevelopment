@@ -3,6 +3,10 @@
 #include "../PluginPublic/Tools.h"
 
 
+#define ANTI_TMD_NAME L"OllyAntiTmd"
+#define ANTI_TMD_VERSION L"1.0.0"
+#define ANTI_TMD_WIND_TITLE L"OllyAsuka"
+
 HINSTANCE g_hDllInst = NULL;
 BOOL g_bFirstLoadDll = TRUE;
 BOOL g_bFirstException = TRUE;
@@ -22,8 +26,8 @@ extc int _export cdecl ODBG2_Pluginquery(int ollydbgversion, ulong *features,
 {
 	if (ollydbgversion < 201)
 		return 0;
-	wcscpy(pluginname, L"OllyAntiTmd");       // Name of plugin
-	wcscpy(pluginversion, L"2.00.01");       // Version of plugin
+	wcscpy(pluginname, ANTI_TMD_NAME);       // Name of plugin
+	wcscpy(pluginversion, ANTI_TMD_VERSION);       // Version of plugin
 	return PLUGIN_VERSION;               // Expected API version
 };
 
@@ -34,8 +38,12 @@ extc int _export cdecl ODBG2_Plugininit()
 {
 	g_bFirstLoadDll = TRUE;
 	g_bFirstException = TRUE;
+
+	SetWindowTextW(hwollymain, ANTI_TMD_WIND_TITLE);
+
 	return 0;
 };
+
 
 extc void _export cdecl ODBG2_Pluginreset(void)
 {
@@ -108,15 +116,25 @@ extc void _export cdecl ODBG2_Pluginmainloop(DEBUG_EVENT* event)
 	}
 };
 
+
+static int Mabout(t_table *pt, wchar_t *name, ulong index, int mode)
+{
+	if (mode == MENU_VERIFY)
+		return MENU_NORMAL;                // Always available
+	return MENU_ABSENT;
+};
+
+
 static t_menu mainmenu[] = {
-	{ L"Test",
-	L"Test",
-	K_NONE, NULL, NULL, 0 },
+	{ L"OllyAntiTmd",
+	L"OllyAntiTmd",
+	K_NONE, Mabout, NULL, 0 },
 	{ NULL, NULL, K_NONE, NULL, NULL, 0 }
 };
 
 
-extc t_menu * __cdecl ODBG2_Pluginmenu(wchar_t *type) {
+extc t_menu * __cdecl ODBG2_Pluginmenu(wchar_t *type) 
+{
 	if (wcscmp(type, PWM_MAIN) == 0)
 		// Main menu.
 		return mainmenu;
