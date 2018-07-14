@@ -1,0 +1,8 @@
+TARGETNAME=giveio
+TARGETPATH=.
+TARGETTYPE=DRIVER
+
+INCLUDES=c:\programme\msvc\ddk\inc
+
+SOURCES=giveio.c
+AMD64_SOURCES=amd64.asm
