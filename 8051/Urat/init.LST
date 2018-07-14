@@ -1,0 +1,74 @@
+C51 COMPILER V7.02a   INIT                                                                 12/24/2013 23:33:58 PAGE 1   
+
+
+C51 COMPILER V7.02a, COMPILATION OF MODULE INIT
+OBJECT MODULE PLACED IN init.OBJ
+COMPILER INVOKED BY: D:\KEIL\C51\BIN\C51.EXE init.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /*-----------------------------------------------
+   2            FileName: init.c
+   3            Author: Bingkan
+   4            Date: 2013/12/24
+   5            Version: 1.0
+   6            Describe: 所有模块初始化代码
+   7          ------------------------------------------------*/
+   8          #include "init.h"
+   9          
+  10          void Uart_Init(void)            //1200bps@12MHz
+  11          {
+  12   1              SCON = 0x50;            //8位数据,可变波特率
+  13   1              TMOD |= 0x20;           //设定定时器1为8位自动重装方式
+  14   1              TH1 = 0xE6;             //设定定时器重装值
+  15   1              TR1 = 1;                //启动定时器1
+  16   1              IPH |= 0x10;        //中断优先级最高
+  17   1              PS = 1;             //中断优先级最高
+  18   1              ES = 1;             //打开串口中断
+  19   1              TI = 0;
+  20   1      }
+  21          
+  22          void Loop_Init(void)
+  23          {
+  24   1              P2=0xfe;           //给初始化值 换算成二进制是1111 1110
+  25   1      }
+  26          
+  27          void Int_Init(void)
+  28          {
+  29   1              EX0=1;                  //开启外部中断 0
+  30   1              IT0=0; 
+  31   1              EX1=1;                  //开启外部中断 1
+  32   1              IT1=0; 
+  33   1      }
+  34          void Timer_Init(void)
+  35          {
+  36   1              TMOD |= 0x01;
+  37   1              TL0 = T1MS; 
+  38   1              TH0 = T1MS >> 8;
+  39   1              TR0 = 1; 
+  40   1              ET0 = 1;
+  41   1      }
+  42          
+  43          void ALL_Init(void)
+  44          {
+  45   1              Loop_Init();
+  46   1              Uart_Init();
+  47   1              Timer_Init();
+  48   1              Int_Init();
+  49   1      } 
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     60    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+C51 COMPILER V7.02a   INIT                                                                 12/24/2013 23:33:58 PAGE 2   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
