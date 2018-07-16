@@ -1,35 +1,34 @@
-;Anscheinend hält Windows (64bit) die 8 KByte IOPM in jedem TSS bereit.
-;Daher genügt es, den Limit-Wert in der GDT entsprechend zu ändern.
 
 .code
-extern KdDebuggerNotPresent:qword	;Pointer auf Byte
+extern KdDebuggerNotPresent:qword	
 
 ;void EachProcessorDpc(KDPC*Dpc, PVOID Context, PVOID Arg1, PVOID Arg2)
 EachProcessorDpc proc
-	push	r9			;Arg2 = Zeiger auf Affinitätsmaske
-	 mov	rcx,r8			;Arg1 = Argument
-	 call	rdx			;Context = Prozedurzeiger
+	push r9			
+	mov	rcx, r8		
+	call rdx	
 	pop	rcx
-	movzx	eax,byte ptr gs:[184h]	;KeGetCurrentProcessorNumber() für AMD64
-	lock btr dword ptr[rcx],eax	;Für diesen Prozessor als erledigt markieren
+	movzx eax,byte ptr gs:[184h]	;KeGetCurrentProcessorNumber() 
+	lock btr dword ptr[rcx],eax	;Mark we are done on this processor
 	ret
 EachProcessorDpc endp
 
-;Zeiger in GDT für TSS beschaffen ->RDX
+;Save TSS Descriptor in rdx
 GetTssDesc proc private
 	sub	rsp,16
 	sgdt	[rsp+6]
 	str	rdx		;Windows: 0x40
-	add	rdx,[rsp+8]
+	shr rdx, 3  ;Skip TI and RPL bits
+	shl rdx, 3  ;Multi 8 = sizeof(Segment Descriptor)
+	add	rdx,[rsp+8] ;TSS Segment Descriptor (Note TSS desciptor is 16 bytes long in IA-32e mode)
 	add	rsp,16
 	ret
 GetTssDesc endp
 
-;GDT-Eintrag für aktuellen TSS auslesen, Offset->RAX, Länge->ECX
-;Typischer Aufbau: 00700067 05008B3F FFFF8000 00000000
-;Anscheinend(!) reserviert Windows (Vista) bereits 8K Platz, da sind Nullen drin.
-;Daher würde es genügen, einfach das Limit in der GDT (den GDTs) zu erhöhen.
-;Was zu testen wäre.
+
+;Get TSS Segment in GDT
+;offset -> rax, length-> ecx
+;Typical item: 00700067 05008B3F FFFF8000 00000000
 GetTSS proc private
 	call	GetTssDesc
 	mov	eax,[rdx+8]
@@ -38,32 +37,39 @@ GetTSS proc private
 	mov	al,[rdx+4]
 	shl	rax,16
 	mov	ax,[rdx+2]
-	movzx	ecx,word ptr[rdx]	;Länge (für ein TSS genügt das)
+	movzx ecx,word ptr[rdx]	;Length
 	inc	ecx
 	ret
 GetTSS endp
 
-;GDT-Eintrag für aktuellen TSS ändern, Offset=RAX, Länge=ECX
-;Ruft PatchGuard auf den Plan! Dieser generiert Bluescreen 0x109 (arg4 = 3 = GDT hacked)
+;Intel Manual:
+;The task register has a visible part (that can be read and changed by software) and an invisible part (maintained
+;by the processor and is inaccessible by software).
+;
+;Here's a hack, as the above Intel manual said, TR has an internal cache of TSS descriptor,
+;we use this cache to bypass PatchGuard
+;The approach is that we first modify TSS descriptor as we need,
+;then load the new TSS descriptor into cache using ltr instruction
+;and finally we recover the original TSS descriptor as soon as the cache is loaded
 SetTSS proc private
 	call	GetTssDesc
 	pushf
-	 cli
-	 dec	ecx
-	 mov	[rdx],cx
-	 mov	[rdx+2],ax
-	 shr	rax,16
-	 mov	[rdx+4],al
-	 mov	[rdx+7],ah
-	 shr	rax,16
-	 mov	[rdx+8],eax
-	 str	ax
-	 and	byte ptr[rdx+5],not 2	;Busy-Bit in GDT löschen (sonst kracht's beim nächsten Befehl)
-	 ltr	ax			;Lade CPU-internen Cache des Task-Registers
-	 mov	rax,qword ptr[KdDebuggerNotPresent]
-	 cmp	byte ptr[rax],0
-	 jz	@f			;Springe wenn Debugger vorhanden
-	 mov	byte ptr[rdx+1],0	;Das geht wirklich! PatchGuard austricksen
+	cli
+	dec	ecx
+	mov	[rdx],cx
+	mov	[rdx+2],ax
+	shr	rax,16
+	mov	[rdx+4],al
+	mov	[rdx+7],ah
+	shr	rax,16
+	mov	[rdx+8],eax
+	str	ax
+	and	byte ptr[rdx+5], not 2	;Clear Busy-Bit in TSS Descriptor, or we get Bluescreen
+	ltr	ax						;Load TSS descriptor into cache
+	mov	rax,qword ptr[KdDebuggerNotPresent]
+	cmp	byte ptr[rax],0
+	jz	@f
+	mov	byte ptr[rdx+1],0	;Recover original content
 @@:	popf
 	ret
 SetTSS endp
@@ -115,7 +121,7 @@ Ke386QueryIoAccessMap endp
 endif
 
 ;void SetIOPermissionMap(int OnOff);
-;Setzt TSS-Limit auf 8K oder 0 für den aktuellen Prozessor
+;Set TSS-Limit to 8K or 0 on current processor
 SetIOPermissionMap proc
 	test	ecx,ecx
 	jnz	@@on
