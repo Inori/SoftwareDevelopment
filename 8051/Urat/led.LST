@@ -1,0 +1,83 @@
+C51 COMPILER V7.02a   LED                                                                  12/24/2013 23:33:58 PAGE 1   
+
+
+C51 COMPILER V7.02a, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: D:\KEIL\C51\BIN\C51.EXE led.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /*-----------------------------------------------
+   2            FileName: led.c
+   3            Author: Bingkan
+   4            Date: 2013/12/24
+   5            Version: 1.0
+   6            Describe: 数码管显示程序
+   7          ------------------------------------------------*/
+   8          #include "led.h"
+   9          
+  10          
+  11          //显示位置
+  12          unsigned char l_posit=0;        
+  13          // 显示段码值0123456789ABCDEF
+  14          unsigned char const ledtbl[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x88,0x83,0xc6,0xa1,0x86,0
+             -x8e};
+  15          
+  16          //显示函数，参数为显示内容
+  17          void display(unsigned int num)
+  18          {
+  19   1              P0=0XFF;                        
+  20   1              switch(l_posit){
+  21   2              case 0:         //选择千位数码管，关闭其它位
+  22   2                      LED4=0;
+  23   2                      LED3=1;
+  24   2                      LED2=1; 
+  25   2                      LED1=1;
+  26   2                      P0=ledtbl[num/1000];    //输出显示内容
+  27   2                      break;
+  28   2              case 1:         //选择百位数码管，关闭其它位
+  29   2                      LED4=1;
+  30   2                      LED3=0; 
+  31   2                      LED2=1;         
+  32   2                      LED1=1;
+  33   2                      P0=ledtbl[num%1000/100];
+  34   2                      break;
+  35   2              case 2:         //选择十位数码管，关闭其它位
+  36   2                      LED4=1;
+  37   2                      LED3=1; 
+  38   2                      LED2=0;         
+  39   2                      LED1=1;
+  40   2                      P0=ledtbl[num%100/10];
+  41   2                      break;
+  42   2              case 3:         //选择个位数码管，关闭其它位
+  43   2                      LED4=1;
+  44   2                      LED3=1; 
+  45   2                      LED2=1;         
+  46   2                      LED1=0;
+  47   2                      P0=ledtbl[num%10];
+  48   2                      break;
+  49   2              }
+  50   1              l_posit++;              //每调用一次将轮流显示一位
+  51   1              if(l_posit>3)
+  52   1                      l_posit=0;      
+  53   1      }
+  54          
+C51 COMPILER V7.02a   LED                                                                  12/24/2013 23:33:58 PAGE 2   
+
+  55          
+  56          
+  57          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    127    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     17    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

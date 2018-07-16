@@ -1,0 +1,8 @@
+"main.obj",
+"tools.obj",
+"init.obj",
+"interrupt.obj",
+"uart.obj",
+"led.obj" 
+TO "urat" 
+RAMSIZE(256) 

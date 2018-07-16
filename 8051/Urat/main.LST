@@ -1,0 +1,54 @@
+C51 COMPILER V7.02a   MAIN                                                                 12/24/2013 23:33:58 PAGE 1   
+
+
+C51 COMPILER V7.02a, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\KEIL\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /*-----------------------------------------------
+   2            FileName: main.c
+   3            Author: Bingkan
+   4            Date: 2013/12/24
+   5            Version: 1.0
+   6            Describe: 全局调用
+   7          ------------------------------------------------*/
+   8          
+   9          #include "include.h" 
+  10          
+  11          //接受数据存储变量。串口收到数据后自动存储1字节到此变量
+  12          unsigned int result = 0;
+  13          //数码管显示的数字
+  14          unsigned int disnum = 1234;
+  15          
+  16          void main (void)
+  17          {
+  18   1              EA    = 0;                  //关闭总中断
+  19   1              ALL_Init();
+  20   1          EA    = 1;                  //打开总中断
+  21   1          
+  22   1              
+  23   1              while (1)                   //主循环不做任何动作
+  24   1          {
+  25   2                      //跑马灯演示，真正用时请关闭
+  26   2                      loopled();
+  27   2          }
+  28   1      }
+  29          
+  30          
+  31          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     12    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
